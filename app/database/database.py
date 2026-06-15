@@ -16,8 +16,8 @@ conn = psycopg2.connect(
 # use cursor to execute sql commands
 cursor = conn.cursor()
 
+# create tables if they do not exist yet
 def create_tables():
-    # create products table
     cursor.execute(
         "CREATE TABLE IF NOT EXISTS products ("
         "product_id SERIAL PRIMARY KEY,"
@@ -29,8 +29,6 @@ def create_tables():
         "stock INT NOT NULL"
         ");"
     )
-
-    # create product history table
     cursor.execute(
         "CREATE TABLE IF NOT EXISTS history ("
         "history_id SERIAL PRIMARY KEY,"

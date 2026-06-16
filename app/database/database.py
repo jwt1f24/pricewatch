@@ -4,20 +4,20 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # locate .env file & return its contents to establish database connection
-load_dotenv(dotenv_path = Path(__file__).parents[2] / "credentials.env")
-conn = psycopg2.connect(
-    dbname = os.getenv("DBNAME"),
-    host = os.getenv("HOST"),
-    port = os.getenv("PORT"),
-    user = os.getenv("USER"),
-    password = os.getenv("PASSWD")
-)
-
-# use cursor to execute sql commands
-cursor = conn.cursor()
+def connect():
+    load_dotenv(dotenv_path=Path(__file__).parents[2] / "credentials.env")
+    return psycopg2.connect(
+        dbname=os.getenv("DBNAME"),
+        host=os.getenv("HOST"),
+        port=os.getenv("PORT"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASSWD")
+    )
 
 # create tables if they do not exist yet
 def create_tables():
+    conn = connect()
+    cursor = conn.cursor() # cursor function allows sql command execution
     cursor.execute(
         "CREATE TABLE IF NOT EXISTS products ("
         "product_id SERIAL PRIMARY KEY,"
@@ -44,29 +44,49 @@ def create_tables():
 
 # insert data into the database
 def insert_product(name, price, url, target_price, email, stock):
+    conn = connect()
+    cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO products(name, price, url, target_price, email, stock) VALUES (%s, %s, %s, %s, %s, %s)",
         (name, price, url, target_price, email, stock)
     )
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 # insert price history of a product into the database
 def insert_history(product_id, price, date):
+    conn = connect()
+    cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO history(product_id, price, date) VALUES (%s, %s, %s)",
         (product_id, price, date)
     )
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 # fetch all products in the database
 def get_products():
+    conn = connect()
+    cursor = conn.cursor()
     cursor.execute(
         "SELECT * FROM products"
     )
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 # fetch all price changes from a specific product
 def get_history(product_id):
+    conn = connect()
+    cursor = conn.cursor()
     cursor.execute(
         "SELECT price, date FROM history WHERE product_id = %s",
         (product_id,)
     )
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 create_tables()

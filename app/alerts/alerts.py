@@ -1,16 +1,16 @@
 import smtplib
-from email.mime.text import MIMEText
 import os
+from email.mime.text import MIMEText
 from dotenv import load_dotenv
 from pathlib import Path
 
-# get admin credentials to send email
+# fetch admin credentials to send email
 load_dotenv(dotenv_path=Path(__file__).parents[2] / "credentials.env")
 sender = os.getenv("EMAIL")
 password = os.getenv("EMAIL_PW")
 
 def alert(alert_type, recipient, product, old_price=None, new_price=None):
-    # check the product's type of change to determine email message
+    # check the product's change type to determine email message
     if alert_type == "price_rise":
         subject = "Alert! Product Price Raised"
         body = (f"Hello!\n\nThe price of: '{product}' "
@@ -33,13 +33,13 @@ def alert(alert_type, recipient, product, old_price=None, new_price=None):
     else:
         return
 
-    # message variables
+    # message element variables
     msg = MIMEText(body)
     msg["Subject"] = subject
     msg["From"] = sender
     msg["To"] = recipient
 
-    # send email va smtplib server
+    # connect & login to gmail server to send message
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.starttls()
         server.login(msg["From"], password)

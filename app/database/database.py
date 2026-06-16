@@ -73,7 +73,7 @@ def get_products():
     cursor.execute(
         "SELECT * FROM products"
     )
-    conn.commit()
+    cursor.fetchall()
     cursor.close()
     conn.close()
 
@@ -85,7 +85,7 @@ def get_history(product_id):
         "SELECT price, date FROM history WHERE product_id = %s",
         (product_id,)
     )
-    conn.commit()
+    cursor.fetchall()
     cursor.close()
     conn.close()
 

@@ -37,10 +37,36 @@ def create_tables():
         "date TIMESTAMP NOT NULL"
         ");"
     )
-
     conn.commit()
     cursor.close()
     conn.close()
     print("Tables have been created.")
+
+# insert data into the database
+def insert_product(name, price, url, target_price, email, stock):
+    cursor.execute(
+        "INSERT INTO products(name, price, url, target_price, email, stock) VALUES (%s, %s, %s, %s, %s, %s)",
+        (name, price, url, target_price, email, stock)
+    )
+
+# insert price history of a product into the database
+def insert_history(product_id, price, date):
+    cursor.execute(
+        "INSERT INTO history(product_id, price, date) VALUES (%s, %s, %s)",
+        (product_id, price, date)
+    )
+
+# fetch all products in the database
+def get_products():
+    cursor.execute(
+        "SELECT * FROM products"
+    )
+
+# fetch all price changes from a specific product
+def get_history(product_id):
+    cursor.execute(
+        "SELECT price, date FROM history WHERE product_id = %s",
+        (product_id,)
+    )
 
 create_tables()

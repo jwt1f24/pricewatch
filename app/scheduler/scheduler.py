@@ -1,6 +1,6 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 from datetime import datetime
-from app.scraper.scraper import scrape_price
+from app.scraper.scraper import scrape
 from app.database.database import get_products, insert_history, update_product
 from app.alerts.alerts import alert
 
@@ -13,7 +13,7 @@ def check_price():
     products = get_products()
     for product in products:
         old_price = product["current_price"]
-        new = scrape_price(url=product["url"])
+        new = scrape(url=product["url"])
 
         # compare both prices, replace old price if new price is different
         if old_price != new["price"] or product["stock"] != new["stock"]:

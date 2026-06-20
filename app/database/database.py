@@ -63,13 +63,25 @@ def insert_product(user_id, name, url, current_price, target_price, stock):
     cursor.close()
     conn.close()
 
-# insert existing data
+# update existing data
 def update_product(product_id, new_price, current_stock):
     conn = connect()
     cursor = conn.cursor()
     cursor.execute(
         "UPDATE products SET current_price = %s, stock = %s WHERE product_id = %s",
         (new_price, current_stock, product_id)
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+# delete a product and its data from database
+def delete_product(product_id):
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        "DELETE FROM products WHERE product_id = %s",
+        (product_id,)
     )
     conn.commit()
     cursor.close()

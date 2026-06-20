@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.extras
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -77,24 +78,26 @@ def insert_history(product_id, price, date):
 # fetch all products in the database
 def get_products():
     conn = connect()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
         "SELECT * FROM products"
     )
-    cursor.fetchall()
+    result = cursor.fetchall()
     cursor.close()
     conn.close()
+    return result
 
 # fetch all price changes from a specific product
 def get_history(product_id):
     conn = connect()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
         "SELECT price, date FROM history WHERE product_id = %s",
         (product_id,)
     )
-    cursor.fetchall()
+    result = cursor.fetchall()
     cursor.close()
     conn.close()
+    return result
 
 create_tables()

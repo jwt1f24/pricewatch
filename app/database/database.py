@@ -52,12 +52,24 @@ def create_tables():
     print("Tables have been created.")
 
 # insert data into the database
-def insert_product(name, price, url, target_price, email, stock):
+def insert_product(user_id, name, url, current_price, target_price, stock):
     conn = connect()
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO products(name, price, url, target_price, email, stock) VALUES (%s, %s, %s, %s, %s, %s)",
-        (name, price, url, target_price, email, stock)
+        "INSERT INTO products(user_id, name, url, current_price, target_price, stock) VALUES (%s, %s, %s, %s, %s, %s)",
+        (user_id, name, url, current_price, target_price, stock)
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+# insert existing data
+def update_product(product_id, new_price, current_stock):
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE products SET current_price = %s, stock = %s WHERE product_id = %s",
+        (new_price, current_stock, product_id)
     )
     conn.commit()
     cursor.close()

@@ -92,7 +92,9 @@ def get_products():
     conn = connect()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
-        "SELECT * FROM products"
+        "SELECT products.*, users.email "
+        "FROM products "
+        "JOIN users ON products.user_id = users.user_id"
     )
     result = cursor.fetchall()
     cursor.close()

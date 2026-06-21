@@ -18,7 +18,7 @@ def check_price():
         # compare both prices, replace old price if new price is different
         if old_price != new["price"] or product["stock"] != new["stock"]:
             update_product(product["product_id"], new["price"], new["stock"])
-            insert_history(product["product_id"], new["price"], datetime.now())
+            insert_history(product["product_id"], new["price"], datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
 
             # price condition
             if new["price"] > old_price:

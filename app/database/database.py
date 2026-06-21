@@ -75,6 +75,36 @@ def update_product(product_id, new_price, current_stock):
     cursor.close()
     conn.close()
 
+# fetch all products in the database
+def get_products():
+    conn = connect()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(
+        "SELECT products.*, users.email "
+        "FROM products "
+        "JOIN users ON products.user_id = users.user_id"
+    )
+    result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return result
+
+# fetch all products tracked by specific user
+def get_user_products(user_id):
+    conn = connect()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(
+        "SELECT products.*, users.email "
+        "FROM products "
+        "JOIN users ON products.user_id = users.user_id "
+        "WHERE users.user_id = %s",
+        (user_id,)
+    )
+    result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return result
+
 # delete a product and its data from database
 def delete_product(product_id):
     conn = connect()
@@ -99,20 +129,6 @@ def insert_history(product_id, price, date):
     cursor.close()
     conn.close()
 
-# fetch all products in the database
-def get_products():
-    conn = connect()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute(
-        "SELECT products.*, users.email "
-        "FROM products "
-        "JOIN users ON products.user_id = users.user_id"
-    )
-    result = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return result
-
 # fetch all price changes from a specific product
 def get_history(product_id):
     conn = connect()
@@ -122,6 +138,31 @@ def get_history(product_id):
         (product_id,)
     )
     result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return result
+
+# insert user credentials into the database
+def insert_user(email, password, date_created):
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO users(email, password, date_created) VALUES (%s, %s, %s)",
+        (email, password, date_created)
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+# fetch user in database
+def get_user(email):
+    conn = connect()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(
+        "SELECT * FROM users WHERE email = %s",
+        (email,)
+    )
+    result = cursor.fetchone()
     cursor.close()
     conn.close()
     return result

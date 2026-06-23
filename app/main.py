@@ -26,10 +26,9 @@ class UserRequest(BaseModel):
 # register endpoint
 @app.post("/register")
 def register(request: UserRequest):
-    bcrypt.hashpw(UserRequest.password.encode('utf-8'), bcrypt.gensalt())
-    insert_user(request.email, request.password, datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+    hashpw = bcrypt.hashpw(request.password.encode('utf-8'), bcrypt.gensalt())
+    insert_user(request.email, hashpw, datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     return {"message": "User registered successfully"}
-
 
 # track product price & store data into database
 @app.post("/products")

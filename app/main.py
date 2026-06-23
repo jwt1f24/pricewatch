@@ -37,3 +37,8 @@ def delete_product(product_id: int):
 @app.get("/products/{product_id}/history")
 def history_product(product_id: int):
     return {"history": get_history(product_id)}
+
+# register endpoint
+class UserRequest(BaseModel):
+    email: str
+    password: str

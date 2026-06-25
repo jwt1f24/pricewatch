@@ -35,8 +35,9 @@ def register(request: UserRequest):
 @app.post("/login")
 def login(request: UserRequest):
     user = get_user(request.email)
+    hashpw = bcrypt.checkpw(request.password.encode('utf-8'), user["password"])
     # raise an error if email or password input is incorrect or does not exist
-    if not user or not bcrypt.checkpw(request.password.encode('utf-8'), user["password"]):
+    if not user or not hashpw:
         raise HTTPException(status_code=401, detail="Incorrect credentials")
     else:
         return {"message": "Login successful", "token": token(user_id=user["user_id"])}

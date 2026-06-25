@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from app.scraper.scraper import scrape
 from app.database.database import insert_product, get_user_products, delete_product as db_del_product, get_history, insert_user, get_user
-from datetime import datetime
+from datetime import datetime, timedelta
+from jose import jwt
 import bcrypt
+import os
 
 # test if API is working
 app = FastAPI()
@@ -37,7 +39,16 @@ def login(request: UserRequest):
     if not user or not bcrypt.checkpw(request.password.encode('utf-8'), user["password"]):
         raise HTTPException(status_code=401, detail="Incorrect credentials")
     else:
-        return {"message": "Login successful"}
+        return {"message": "Login successful", "token": token(user_id=user["user_id"])}
+
+# login token endpoint
+KEY = os.getenv("KEY")
+def token(user_id: int):
+    payload = {
+        "user_id": user_id,
+        "exp": datetime.now() + timedelta(days=1)
+    }
+    return jwt.encode(payload, KEY, algorithm="HS256")
 
 # track product price & store data into database
 @app.post("/products")

@@ -1,13 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from app.scraper.scraper import scrape
-from app.database.database import insert_product, get_user_products, delete_product as db_del_product, get_history, insert_user
+from app.database.database import insert_product, get_user_products, delete_product as db_del_product, get_history, insert_user, get_user
 from datetime import datetime
 import bcrypt
 
-app = FastAPI()
-
 # test if API is working
+app = FastAPI()
 @app.get("/")
 def root():
     return {"message": "PriceWatch API"}
@@ -29,6 +28,16 @@ def register(request: UserRequest):
     hashpw = bcrypt.hashpw(request.password.encode('utf-8'), bcrypt.gensalt())
     insert_user(request.email, hashpw, datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     return {"message": "User registered successfully"}
+
+# login endpoint
+@app.post("/login")
+def login(request: UserRequest):
+    user = get_user(request.email)
+    # raise an error if email or password input is incorrect or does not exist
+    if not user or not bcrypt.checkpw(request.password.encode('utf-8'), user["password"]):
+        raise HTTPException(status_code=401, detail="Incorrect credentials")
+    else:
+        return {"message": "Login successful"}
 
 # track product price & store data into database
 @app.post("/products")

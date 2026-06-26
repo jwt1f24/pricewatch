@@ -7,7 +7,7 @@ from jose import jwt
 import bcrypt
 import os
 
-# test if API is working
+# test if API is working (uvicorn app.main:app --reload)
 app = FastAPI()
 @app.get("/")
 def root():
@@ -27,20 +27,20 @@ class UserRequest(BaseModel):
 # register endpoint
 @app.post("/register")
 def register(request: UserRequest):
-    hashpw = bcrypt.hashpw(request.password.encode('utf-8'), bcrypt.gensalt())
-    insert_user(request.email, hashpw, datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+    hashpw = bcrypt.hashpw(request.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    insert_user(request.email, hashpw, datetime.now())
     return {"message": "User registered successfully"}
 
 # login endpoint
 @app.post("/login")
 def login(request: UserRequest):
     user = get_user(request.email)
-    hashpw = bcrypt.checkpw(request.password.encode('utf-8'), user["password"])
-    # raise an error if email or password input is incorrect or does not exist
-    if not user or not hashpw:
+    # raise an error if email or password is incorrect or does not exist
+    if not user:
         raise HTTPException(status_code=401, detail="Incorrect credentials")
-    else:
-        return {"message": "Login successful", "token": token(user_id=user["user_id"])}
+    if not bcrypt.checkpw(request.password.encode('utf-8'), user["password"].encode('utf-8')):
+        raise HTTPException(status_code=401, detail="Incorrect credentials")
+    return {"message": "Login successful", "token": token(user_id=user["user_id"])}
 
 # login token endpoint
 KEY = os.getenv("KEY")

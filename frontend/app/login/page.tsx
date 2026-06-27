@@ -1,6 +1,7 @@
-"use client"; // login page state instance
+"use client"; // page state instance
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // primary function - handle user login
 export default function Login() {
@@ -21,14 +22,15 @@ export default function Login() {
     const data = await apicall.json();
 
     // error handling, save token & redirect if login successful
-    if (!data.token) {
-      setError("Incorrect credentials");
-    } else {
+    if (data.token) {
       localStorage.setItem("token", data.token);
       router.push("/dashboard");
+    } else {
+      setError("Incorrect credentials");
     }
   }
 
+  // page structure
   return (
     <main>
       <input
@@ -44,6 +46,7 @@ export default function Login() {
         placeholder="Enter password"
       />
       <button onClick={handleLogin}>Log In</button>
+      <Link href="/register">Don't have an account?</Link>
       {error && <p>{error}</p>}
     </main>
   );

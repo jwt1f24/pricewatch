@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.scraper.scraper import scrape
 from app.database.database import insert_product, get_user_products, delete_product as db_del_product, get_history, insert_user, get_user
@@ -9,6 +10,12 @@ import os
 
 # test if API is working (uvicorn app.main:app --reload)
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 @app.get("/")
 def root():
     return {"message": "PriceWatch API"}

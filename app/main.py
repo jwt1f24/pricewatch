@@ -34,6 +34,11 @@ class UserRequest(BaseModel):
 # register endpoint
 @app.post("/register")
 def register(request: UserRequest):
+    # check if account already exists in database yet
+    database = get_user(email=request.email)
+    if database:
+        raise HTTPException(status_code=400, detail="User already exists")
+
     hashpw = bcrypt.hashpw(request.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     insert_user(request.email, hashpw, datetime.now())
     return {"message": "User registered successfully"}

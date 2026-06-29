@@ -40,7 +40,7 @@ export default function Register() {
       if (apicall.ok) {
         router.push("/login");
       } else {
-        setError("Invalid! Account already exists");
+        setError("Account already exists");
       }
     } catch {
       console.log("Error: ", error);

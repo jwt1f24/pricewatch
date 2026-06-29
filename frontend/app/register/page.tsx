@@ -30,7 +30,7 @@ export default function Register() {
     }
 
     try {
-      const apicall = await fetch("http://localhost:8000/register", {
+      const apicall = await fetch(`http://localhost:8000/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

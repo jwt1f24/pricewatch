@@ -14,7 +14,7 @@ export default function Login() {
   async function handleLogin() {
     console.log("Login button clicked");
 
-    const apicall = await fetch("http://localhost:8000/login", {
+    const apicall = await fetch(`http://localhost:8000/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
